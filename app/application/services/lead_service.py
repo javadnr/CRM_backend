@@ -5,7 +5,9 @@ from app.infrastructure.db.models.action_history_model import (
 )
 from app.domain.interfaces.unit_of_work import AbstractUnitOfWork
 from app.infrastructure.cache.dashboard_cache import DashboardCache
-
+from app.domain.events.lead_events import (
+    LeadStatusChangedEvent
+)
 
 class LeadNotFound(Exception):
     pass
@@ -48,6 +50,11 @@ class LeadService:
         )
 
         await uow.history.add(history)
+        
+        event = LeadStatusChangedEvent(
+            lead.id,
+            old_status,
+            new_status,
+        )
 
-        # cache invalidation AFTER successful transaction
-        await self.cache.invalidate_stats()
+        await uow.outbox.add_event(event)

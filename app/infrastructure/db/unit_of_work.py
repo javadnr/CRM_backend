@@ -6,7 +6,9 @@ from app.infrastructure.repositories.action_history_repository import (
     ActionHistoryRepository,
 )
 from app.domain.interfaces.unit_of_work import AbstractUnitOfWork
-
+from app.infrastructure.repositories.outbox_repository import (
+    OutboxRepository
+)
 
 class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
 
@@ -15,6 +17,7 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
 
     async def __aenter__(self):
         self.session = AsyncSessionLocal()
+        self.outbox = OutboxRepository(self.session)
 
         self.leads = LeadRepository(self.session)
         self.history = ActionHistoryRepository(self.session)
