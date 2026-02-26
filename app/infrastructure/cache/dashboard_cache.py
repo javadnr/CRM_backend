@@ -5,7 +5,9 @@ from app.infrastructure.cache.keys import DASHBOARD_STATS_KEY
 
 
 class DashboardCache:
-
+    """
+    Cache data to redis to prevent database queries in the future
+    """
     async def get_stats(self) -> Dict | None:
         data = await redis_client.get(DASHBOARD_STATS_KEY)
 

@@ -13,7 +13,6 @@ from app.infrastructure.db.models.lead_model import LeadModel
 class LeadNotFound(Exception):
     pass
 
-
 class InvalidStatusTransition(Exception):
     pass
 
@@ -30,6 +29,7 @@ class LeadService:
         source: str | None,
         uow: AbstractUnitOfWork,
     ):
+        
         lead = LeadModel(
             id=uuid4(),
             name=name,
@@ -69,11 +69,11 @@ class LeadService:
 
         await uow.history.add(history)
         
-        event = LeadStatusChangedEvent(
-            lead.id,
-            old_status,
-            new_status,
-        )
         #example of using outbox model for other jobs like sending emails or caching
+        # event = LeadStatusChangedEvent(
+        #     lead.id,
+        #     old_status,
+        #     new_status,
+        # )
         # await uow.outbox.add_event(event)
         

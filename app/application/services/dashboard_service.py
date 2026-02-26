@@ -12,7 +12,11 @@ class DashboardService:
         self.cache = cache
 
     async def get_stats(self):
-
+        """
+        Sample of redis cache here to prevent database queries 
+        in the future in higher traffics scenarios we can use 
+        in other services too
+        """
         cached = await self.cache.get_stats()
         if cached:
             return cached
@@ -24,6 +28,7 @@ class DashboardService:
         return stats
     
     async def get_leads(self, source: str | None):
+        #Todo add cache
         return await self.lead_repo.filter_by_source(source)
     
     async def get_leads_paginated(
@@ -32,6 +37,7 @@ class DashboardService:
         page: int,
         page_size: int,
     ):
+        #Todo add cache
         return await self.lead_repo.filter_with_pagination(
             source,
             page,

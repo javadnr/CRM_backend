@@ -69,7 +69,6 @@ class LeadRepository(LeadRepositoryInterface):
                 LeadModel.source == source
             )
 
-        # total count query
         count_stmt = select(func.count()).select_from(
             base_query.subquery()
         )
@@ -77,7 +76,6 @@ class LeadRepository(LeadRepositoryInterface):
         total_result = await self.session.execute(count_stmt)
         total = total_result.scalar_one()
 
-        # paginated query
         stmt = (
             base_query
             .offset((page - 1) * page_size)

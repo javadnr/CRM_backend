@@ -11,8 +11,3 @@ app.include_router(dashboard.router)
 async def health():
     return {"status": "ok"}
 
-# {
-#   "id": "114bbd48-9560-422c-ba6a-7656c0fff9ea",
-#   "name": "Alice Smith",
-#   "status": "new"
-# }

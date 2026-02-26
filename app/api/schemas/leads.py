@@ -7,7 +7,7 @@ class LeadCreateRequest(BaseModel):
     phone: str | None = None
     source: str | None = None
 
-class LeadResponse(BaseModel):
+class LeadCreateResponse(BaseModel):
     id: UUID
     name: str
     status: str
