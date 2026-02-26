@@ -54,3 +54,39 @@ class LeadRepository(LeadRepositoryInterface):
         result = await self.session.execute(stmt)
 
         return result.scalars().all()
+    
+    async def filter_with_pagination(
+        self,
+        source: str | None,
+        page: int,
+        page_size: int,
+    ):
+
+        base_query = select(LeadModel)
+
+        if source:
+            base_query = base_query.where(
+                LeadModel.source == source
+            )
+
+        # total count query
+        count_stmt = select(func.count()).select_from(
+            base_query.subquery()
+        )
+
+        total_result = await self.session.execute(count_stmt)
+        total = total_result.scalar_one()
+
+        # paginated query
+        stmt = (
+            base_query
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .order_by(LeadModel.created_at.desc())
+        )
+
+        result = await self.session.execute(stmt)
+
+        items = result.scalars().all()
+
+        return items, total

@@ -11,3 +11,15 @@ class DashboardService:
 
     async def get_leads(self, source: str | None):
         return await self.lead_repo.filter_by_source(source)
+    
+    async def get_leads_paginated(
+        self,
+        source: str | None,
+        page: int,
+        page_size: int,
+    ):
+        return await self.lead_repo.filter_with_pagination(
+            source,
+            page,
+            page_size,
+        )

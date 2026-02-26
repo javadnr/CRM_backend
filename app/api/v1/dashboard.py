@@ -8,6 +8,7 @@ from app.api.schemas.dashboard import (
     DashboardStatsResponse,
     LeadResponse,
 )
+from app.api.schemas.common import PaginatedResponse
 
 router = APIRouter(prefix="/dashboard")
 
@@ -24,15 +25,26 @@ async def get_dashboard_stats(
     return DashboardStatsResponse(**stats)
 
 
-@router.get("/leads", response_model=list[LeadResponse])
+@router.get("/leads", response_model=PaginatedResponse[LeadResponse])
 async def get_leads(
     source: str | None = Query(default=None),
-    session: AsyncSession = Depends(get_db)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    session: AsyncSession = Depends(get_db),
 ):
 
     repo = LeadRepository(session)
     service = DashboardService(repo)
 
-    leads = await service.get_leads(source)
+    items, total = await service.get_leads_paginated(
+        source,
+        page,
+        page_size,
+    )
 
-    return leads
+    return PaginatedResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+    )

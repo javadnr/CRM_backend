@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 from app.infrastructure.db.models.lead_model import LeadModel
 from app.infrastructure.db.models.action_history_model import ActionHistoryModel
 from app.domain.enums import LeadStatus
@@ -26,6 +26,14 @@ class LeadRepositoryInterface(ABC):
     ) -> List[LeadModel]:
         ...
         
+    @abstractmethod
+    async def filter_with_pagination(
+        self,
+        source: str | None,
+        page: int,
+        page_size: int,
+    ) -> Tuple[List[LeadModel], int]:
+        ...
 class ActionHistoryRepositoryInterface(ABC):
     @abstractmethod
     async def add(self, history: ActionHistoryModel):
