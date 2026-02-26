@@ -8,7 +8,8 @@ from app.infrastructure.cache.dashboard_cache import DashboardCache
 from app.domain.events.lead_events import (
     LeadStatusChangedEvent
 )
-
+from uuid import uuid4
+from app.infrastructure.db.models.lead_model import LeadModel
 class LeadNotFound(Exception):
     pass
 
@@ -58,3 +59,20 @@ class LeadService:
         )
 
         await uow.outbox.add_event(event)
+        
+    async def create_lead(
+        self,
+        name: str,
+        phone: str | None,
+        source: str | None,
+        uow: AbstractUnitOfWork,
+    ):
+        lead = LeadModel(
+            id=uuid4(),
+            name=name,
+            phone=phone,
+            source=source,
+            status=LeadStatus.NEW,
+        )
+        await uow.leads.add(lead)
+        return lead

@@ -1,0 +1,18 @@
+from fastapi import FastAPI
+from app.api.v1 import leads, dashboard
+
+app = FastAPI(title="CRM Backend")
+
+app.include_router(leads.router)
+app.include_router(dashboard.router)
+
+
+@app.get("/")
+async def health():
+    return {"status": "ok"}
+
+# {
+#   "id": "114bbd48-9560-422c-ba6a-7656c0fff9ea",
+#   "name": "Alice Smith",
+#   "status": "new"
+# }

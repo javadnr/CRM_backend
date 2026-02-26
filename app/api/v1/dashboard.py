@@ -36,7 +36,8 @@ async def get_leads(
 ):
 
     repo = LeadRepository(session)
-    service = DashboardService(repo)
+    cache = DashboardCache()
+    service = DashboardService(repo,cache)
 
     items, total = await service.get_leads_paginated(
         source,

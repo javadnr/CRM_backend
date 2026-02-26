@@ -18,7 +18,6 @@ async def process_outbox():
         )
 
         events = result.scalars().all()
-
         cache = DashboardCache()
 
         for event in events:

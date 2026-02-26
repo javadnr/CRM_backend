@@ -6,6 +6,10 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.core.config import settings
+from app.infrastructure.db.base import Base
+from app.infrastructure.db.models.lead_model import LeadModel
+from app.infrastructure.db.models.action_history_model import ActionHistoryModel
+from app.infrastructure.db.models.outbox_model import OutboxMessageModel
 
 database_url = f"postgresql://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}"
 # this is the Alembic Config object, which provides
@@ -21,7 +25,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
