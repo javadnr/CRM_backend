@@ -22,7 +22,24 @@ class LeadService:
 
     def __init__(self, cache: DashboardCache):
         self.cache = cache
-
+        
+    async def create_lead(
+        self,
+        name: str,
+        phone: str | None,
+        source: str | None,
+        uow: AbstractUnitOfWork,
+    ):
+        lead = LeadModel(
+            id=uuid4(),
+            name=name,
+            phone=phone,
+            source=source,
+            status=LeadStatus.NEW,
+        )
+        await uow.leads.add(lead)
+        return lead
+    
     async def change_status(
         self,
         lead_id: UUID,
@@ -57,22 +74,6 @@ class LeadService:
             old_status,
             new_status,
         )
-
-        await uow.outbox.add_event(event)
+        #example of using outbox model for other jobs like sending emails or caching
+        # await uow.outbox.add_event(event)
         
-    async def create_lead(
-        self,
-        name: str,
-        phone: str | None,
-        source: str | None,
-        uow: AbstractUnitOfWork,
-    ):
-        lead = LeadModel(
-            id=uuid4(),
-            name=name,
-            phone=phone,
-            source=source,
-            status=LeadStatus.NEW,
-        )
-        await uow.leads.add(lead)
-        return lead

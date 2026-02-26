@@ -9,22 +9,24 @@ from app.infrastructure.cache.dashboard_cache import (
 
 
 async def process_outbox():
+    # here is the sample of using outbox model for other jobs like sending emails
+    
+    # async with AsyncSessionLocal() as session:
 
-    async with AsyncSessionLocal() as session:
+    #     result = await session.execute(
+    #         select(OutboxMessageModel)
+    #         .where(OutboxMessageModel.processed == False)
+    #     )
 
-        result = await session.execute(
-            select(OutboxMessageModel)
-            .where(OutboxMessageModel.processed == False)
-        )
+    #     events = result.scalars().all()
+    #     cache = DashboardCache()
 
-        events = result.scalars().all()
-        cache = DashboardCache()
+    #     for event in events:
 
-        for event in events:
+    #         if event.event_type == "LeadStatusChangedEvent":
+    #             await cache.invalidate_stats()
 
-            if event.event_type == "LeadStatusChangedEvent":
-                await cache.invalidate_stats()
+    #         event.processed = True
 
-            event.processed = True
-
-        await session.commit()
+    #     await session.commit()
+    pass

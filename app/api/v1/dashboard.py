@@ -17,7 +17,6 @@ router = APIRouter(prefix="/dashboard")
 async def get_dashboard_stats(
     session: AsyncSession = Depends(get_db)
 ):
-
     repo = LeadRepository(session)
     cache = DashboardCache()
     service = DashboardService(repo,cache)

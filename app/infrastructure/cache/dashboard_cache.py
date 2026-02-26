@@ -18,7 +18,7 @@ class DashboardCache:
         await redis_client.set(
             DASHBOARD_STATS_KEY,
             json.dumps(stats),
-            ex=60  # TTL 60 seconds
+            ex=60
         )
 
     async def invalidate_stats(self):

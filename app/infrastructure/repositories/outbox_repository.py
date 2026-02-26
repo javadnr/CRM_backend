@@ -31,4 +31,3 @@ class OutboxRepository:
         )
 
         self.session.add(message)
-        # optionally commit outside for transaction management

@@ -10,21 +10,6 @@ from app.api.schemas.leads import LeadCreateRequest, LeadResponse
 router = APIRouter()
 cache = DashboardCache()
 service = LeadService(cache)
-
-@router.post("/leads/{lead_id}/status")
-async def update_status(
-    lead_id: UUID,
-    new_status: LeadStatus,
-):
-    async with SQLAlchemyUnitOfWork() as uow:
-        await service.change_status(
-            lead_id,
-            new_status,
-            uow,
-        )
-
-    return {"status": "updated"}
-
     
 @router.post("/leads", response_model=LeadResponse)
 async def create_lead(req: LeadCreateRequest):
@@ -40,3 +25,18 @@ async def create_lead(req: LeadCreateRequest):
         name=lead.name,
         status=lead.status.value
     )
+    
+@router.post("/leads/{lead_id}/status")
+async def update_status(
+    lead_id: UUID,
+    new_status: LeadStatus,
+):
+    async with SQLAlchemyUnitOfWork() as uow:
+        await service.change_status(
+            lead_id,
+            new_status,
+            uow,
+        )
+
+    return {"status": "updated"}
+
