@@ -5,6 +5,7 @@ from app.infrastructure.repositories.lead_repository import LeadRepository
 from app.infrastructure.repositories.action_history_repository import ActionHistoryRepository
 from app.infrastructure.db.models.action_history_model import ActionHistoryModel
 from app.domain.enums import LeadStatus
+from app.infrastructure.cache.dashboard_cache import DashboardCache
 
 class LeadNotFound(Exception):
     pass
@@ -13,12 +14,20 @@ class InvalidStatusTransition(Exception):
     pass
 
 class LeadService:
-    def __init__(self, lead_repo: LeadRepository, history_repo: ActionHistoryRepository, session: AsyncSession):
+    def __init__(
+        self,
+        lead_repo,
+        history_repo,
+        session,
+        cache: DashboardCache,
+    ):
         self.lead_repo = lead_repo
         self.history_repo = history_repo
         self.session = session
-
+        self.cache = cache
+        
     async def change_status(self, lead_id: UUID, new_status: LeadStatus):
+        await self.cache.invalidate_stats()
         async with self.session.begin():  # atomic transaction
             # lock row
             result = await self.session.execute(

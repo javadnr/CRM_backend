@@ -9,6 +9,7 @@ from app.api.schemas.dashboard import (
     LeadResponse,
 )
 from app.api.schemas.common import PaginatedResponse
+from app.infrastructure.cache.dashboard_cache import DashboardCache
 
 router = APIRouter(prefix="/dashboard")
 
@@ -18,7 +19,8 @@ async def get_dashboard_stats(
 ):
 
     repo = LeadRepository(session)
-    service = DashboardService(repo)
+    cache = DashboardCache()
+    service = DashboardService(repo,cache)
 
     stats = await service.get_stats()
 

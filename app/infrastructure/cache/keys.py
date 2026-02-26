@@ -1,0 +1,1 @@
+DASHBOARD_STATS_KEY = "dashboard:stats"
