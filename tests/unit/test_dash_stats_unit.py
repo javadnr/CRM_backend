@@ -2,7 +2,7 @@ import pytest
 from fastapi import status, HTTPException
 from unittest.mock import AsyncMock, patch, ANY
 from httpx import Response
-from app.api.v1.dashboard import get_dashboard_stats   # adjust import path
+from app.api.v1.dashboard import get_dashboard_stats
 from app.application.services.dashboard_service import DashboardService
 from app.api.schemas.dashboard import DashboardStatsResponse
 

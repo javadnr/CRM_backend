@@ -68,7 +68,7 @@ async def test_create_lead_validation_error():
 
     with pytest.raises(HTTPException) as exc:
         await create_lead(
-            req=LeadCreateRequest(**invalid_req),  # may already fail here
+            req=LeadCreateRequest(**invalid_req),
             service=service_mock
         )
 

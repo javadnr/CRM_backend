@@ -2,7 +2,7 @@ import pytest
 from uuid import uuid4
 from fastapi import HTTPException, status
 from unittest.mock import AsyncMock, patch, ANY
-from app.api.v1.leads import update_status  # adjust path if needed
+from app.api.v1.leads import update_status
 from app.application.services.lead_service import LeadService
 from app.domain.enums import LeadStatus
 from app.core.exceptions.services import (
@@ -54,7 +54,6 @@ async def test_update_status_repetitive_change_rejected():
         await update_status(lead_id, new_status, fake_request, service_mock)
 
     assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
-    # Match the actual message from your endpoint (including typo if not fixed yet)
     assert "repitive status change" in exc_info.value.detail.lower()
 
 

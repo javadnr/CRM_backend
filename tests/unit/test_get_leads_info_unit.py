@@ -1,8 +1,3 @@
-# tests/api/v1/test_leads_list.py
-"""
-Tests for GET /leads endpoint
-"""
-
 import pytest
 from uuid import uuid4
 from fastapi import status, HTTPException
@@ -12,11 +7,6 @@ from app.api.v1.dashboard import get_leads
 from app.application.services.dashboard_service import DashboardService
 from app.api.schemas.common import PaginatedResponse
 from app.api.schemas.dashboard import LeadResponse
-
-
-# -------------------------------------------------------------------------
-# Pure unit tests – mocking DashboardService
-# -------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_get_leads_happy_path():
@@ -115,13 +105,11 @@ async def test_get_leads_boundary_values():
     service_mock = AsyncMock()
     service_mock.get_leads_paginated.return_value = ([], 0)
 
-    # page=1, page_size=1
     await get_leads(page=1, page_size=1, service=service_mock)
     service_mock.get_leads_paginated.assert_awaited_with(ANY, 1, 1)
 
     service_mock.reset_mock()
 
-    # page=5, page_size=100 (max)
     await get_leads(page=5, page_size=100, service=service_mock)
     service_mock.get_leads_paginated.assert_awaited_with(ANY, 5, 100)
 
@@ -144,7 +132,6 @@ async def test_get_leads_empty_result():
 async def test_get_leads_unhandled_exception():
     service_mock = AsyncMock()
     
-    # Important: raise inside the coroutine
     async def failing_call(*args, **kwargs):
         raise RuntimeError("real database timeout")
     
