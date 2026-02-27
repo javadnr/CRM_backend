@@ -26,4 +26,7 @@ makemigration:
 	docker compose exec api alembic revision --autogenerate -m "$(msg)"
 
 clean:
-	docker compose down -v
+	docker compose down -v\
+
+test:
+	pytest

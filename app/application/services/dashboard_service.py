@@ -17,13 +17,13 @@ class DashboardService:
         in the future in higher traffics scenarios we can use 
         in other services too
         """
-        cached = await self.cache.get_stats()
-        if cached:
-            return cached
+        # caching sample on high load
+        # cached = await self.cache.get_stats()
+        # if cached:
+        #     return cached
 
         stats = await self.lead_repo.get_status_stats()
-
-        await self.cache.set_stats(stats)
+        # await self.cache.set_stats(stats)
 
         return stats
     

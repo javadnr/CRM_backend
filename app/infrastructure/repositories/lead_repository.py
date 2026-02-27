@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from uuid import UUID
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 
 from app.domain.interfaces.repositories import LeadRepositoryInterface
 from app.infrastructure.db.models.lead_model import LeadModel
@@ -21,7 +21,35 @@ class LeadRepository(LeadRepositoryInterface):
     async def add(self, lead: LeadModel):
         self.session.add(lead)
         await self.session.flush()
-    
+        
+    async def find_existing_lead(self, phone: str, email: str) -> bool:
+        if not phone and not email:
+            return False
+        
+        stmt = select(LeadModel)
+        conditions = []
+
+        if phone and phone.strip():
+            clean_phone = phone.strip()
+            conditions.append(LeadModel.phone == clean_phone)
+
+        if email and email.strip():
+            clean_email = email.strip().lower()
+            conditions.append(func.lower(LeadModel.email) == clean_email)
+
+        if not conditions:
+            return False
+        
+        stmt = stmt.where(or_(*conditions))
+        
+        result = await self.session.execute(stmt)
+        existing = result.scalar_one_or_none()
+        
+        if existing:
+            return True
+        else:
+            return False
+
     async def get_status_stats(self) -> Dict[str, int]:
 
         stmt = (

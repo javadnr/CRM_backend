@@ -1,6 +1,7 @@
 .venv/
+.env.test
+.env.prod
 .env.dev
-.env.production
 __pycache__/
 celerybeat-schedule
 logs/

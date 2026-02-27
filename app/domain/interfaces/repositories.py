@@ -10,7 +10,9 @@ class LeadRepositoryInterface(ABC):
     @abstractmethod
     async def get_by_id(self, lead_id: UUID) -> Optional[LeadModel]:
         ...
-
+    @abstractmethod
+    async def find_existing_lead(self,lead:LeadModel) -> bool:
+        ...
     @abstractmethod
     async def add(self, lead: LeadModel):
         ...
@@ -37,4 +39,9 @@ class LeadRepositoryInterface(ABC):
 class ActionHistoryRepositoryInterface(ABC):
     @abstractmethod
     async def add(self, history: ActionHistoryModel):
+        ...
+        
+class OutboxRepositoryInterface(ABC):
+    @abstractmethod
+    async def add_event(self, event):
         ...

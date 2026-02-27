@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
     """
     Created context manager to handle transactions and rollbacks\n
-    to achive atomic transactions to db bt sharing the same session
+    to achive atomic transactions to db by sharing the same session
     in each repository at the same time 
     """
     def __init__(self):

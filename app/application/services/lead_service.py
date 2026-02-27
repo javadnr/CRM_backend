@@ -8,14 +8,8 @@ from app.infrastructure.db.models.action_history_model import (
 from app.domain.interfaces.unit_of_work import AbstractUnitOfWork
 from app.infrastructure.cache.dashboard_cache import DashboardCache
 from app.infrastructure.db.models.lead_model import LeadModel
-
+from app.core.exceptions.services import LeadNotFound, InvalidStatusTransition, LeadAlreadyExists, RepitiveStatusChange
 logger = logging.getLogger(__name__)
-class LeadNotFound(Exception):
-    pass
-
-class InvalidStatusTransition(Exception):
-    pass
-
 
 class LeadService:
 
@@ -30,6 +24,10 @@ class LeadService:
         source: str | None,
         uow: AbstractUnitOfWork,
     ):
+        exsisting = await uow.leads.find_existing_lead(phone=phone,email=email)
+        if exsisting == True:
+            logger.debug(f"Lead with info {name,phone,email,source} already exists")
+            raise LeadAlreadyExists()
         
         lead = LeadModel(
             id=uuid4(),
@@ -50,7 +48,6 @@ class LeadService:
     ):
 
         lead = await uow.leads.get_by_id(lead_id)
-
         if not lead:
             logger.info(f"Lead with id {lead_id} not found")
             raise LeadNotFound()
@@ -65,6 +62,8 @@ class LeadService:
         old_status = lead.status
         lead.status = new_status
 
+        if old_status == new_status:
+            raise RepitiveStatusChange()
         history = ActionHistoryModel(
             lead_id=lead.id,
             from_status=old_status,

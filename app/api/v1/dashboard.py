@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 import sys
 
-from app.api.deps import get_db
+from app.api.deps import get_dashboard_service
 from app.infrastructure.repositories.lead_repository import LeadRepository
 from app.application.services.dashboard_service import DashboardService
 from app.api.schemas.common import PaginatedResponse
@@ -17,11 +17,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/dashboard")
 
 @router.get("/stats", response_model=DashboardStatsResponse)
-async def get_dashboard_stats(session: AsyncSession = Depends(get_db)):
+async def get_dashboard_stats(service: DashboardService = Depends(get_dashboard_service)):
     try:
-        repo = LeadRepository(session)
-        cache = DashboardCache()
-        service = DashboardService(repo,cache)
 
         stats = await service.get_stats()
 
@@ -36,13 +33,9 @@ async def get_leads(
     source: str | None = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    session: AsyncSession = Depends(get_db),
+    service: DashboardService = Depends(get_dashboard_service),
 ):
     try:
-        repo = LeadRepository(session)
-        cache = DashboardCache()
-        service = DashboardService(repo,cache)
-
         items, total = await service.get_leads_paginated(
             source,
             page,

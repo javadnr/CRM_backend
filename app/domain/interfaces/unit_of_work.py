@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from app.domain.interfaces.repositories import (
     LeadRepositoryInterface,
     ActionHistoryRepositoryInterface,
+    OutboxRepositoryInterface
 )
 
 
@@ -9,7 +10,8 @@ class AbstractUnitOfWork(ABC):
 
     leads: LeadRepositoryInterface
     history: ActionHistoryRepositoryInterface
-
+    outbox: OutboxRepositoryInterface
+    
     async def __aenter__(self):
         return self
 
