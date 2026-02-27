@@ -5,3 +5,4 @@
 __pycache__/
 celerybeat-schedule
 logs/
+.pytest_cache/

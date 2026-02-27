@@ -29,4 +29,6 @@ clean:
 	docker compose down -v\
 
 test:
-	pytest
+	docker compose up -d
+	docker compose exec api pytest
+	docker compose down
