@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging 
 
 from app.infrastructure.db.session import AsyncSessionLocal
 from app.infrastructure.repositories.lead_repository import LeadRepository
@@ -10,8 +11,13 @@ from app.infrastructure.repositories.outbox_repository import (
     OutboxRepository
 )
 
+logger = logging.getLogger(__name__)
 class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
-
+    """
+    Created context manager to handle transactions and rollbacks\n
+    to achive atomic transactions to db bt sharing the same session
+    in each repository at the same time 
+    """
     def __init__(self):
         self.session: AsyncSession | None = None
 
@@ -27,6 +33,7 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
     async def __aexit__(self, exc_type, exc, tb):
 
         if exc_type:
+            logger.debug(f"A request to change the stat of a lead rolled back due to exception:{exc}")
             await self.rollback()
         else:
             await self.commit()

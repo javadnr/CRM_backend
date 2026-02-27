@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging
+import sys
 
 from app.api.deps import get_db
 from app.infrastructure.repositories.lead_repository import LeadRepository
@@ -11,6 +13,7 @@ from app.api.schemas.dashboard import (
     LeadResponse,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/dashboard")
 
 @router.get("/stats", response_model=DashboardStatsResponse)
@@ -24,6 +27,8 @@ async def get_dashboard_stats(session: AsyncSession = Depends(get_db)):
 
         return DashboardStatsResponse(**stats)
     except Exception as e:
+        exception_text = 'Error on line {}: {} - {}'.format(sys.exc_info()[-1].tb_lineno, type(e).__name__, e)
+        logger.error(f"exception in /stats GET: {exception_text}")
         raise HTTPException(status_code=500, detail='Internal Server Error')
 
 @router.get("/leads", response_model=PaginatedResponse[LeadResponse])
@@ -51,4 +56,6 @@ async def get_leads(
             page_size=page_size,
         )
     except Exception as e:
+        exception_text = 'Error on line {}: {} - {}'.format(sys.exc_info()[-1].tb_lineno, type(e).__name__, e)
+        logger.error(f"exception in /leads GET: {exception_text}")
         raise HTTPException(status_code=500, detail='Internal Server Error')

@@ -1,15 +1,15 @@
-from uuid import UUID
+from uuid import UUID, uuid4
+import logging
+
 from app.domain.enums import LeadStatus
 from app.infrastructure.db.models.action_history_model import (
     ActionHistoryModel,
 )
 from app.domain.interfaces.unit_of_work import AbstractUnitOfWork
 from app.infrastructure.cache.dashboard_cache import DashboardCache
-from app.domain.events.lead_events import (
-    LeadStatusChangedEvent
-)
-from uuid import uuid4
 from app.infrastructure.db.models.lead_model import LeadModel
+
+logger = logging.getLogger(__name__)
 class LeadNotFound(Exception):
     pass
 
@@ -26,6 +26,7 @@ class LeadService:
         self,
         name: str,
         phone: str | None,
+        email: str | None,
         source: str | None,
         uow: AbstractUnitOfWork,
     ):
@@ -34,6 +35,7 @@ class LeadService:
             id=uuid4(),
             name=name,
             phone=phone,
+            email=email,
             source=source,
             status=LeadStatus.NEW,
         )
@@ -50,12 +52,14 @@ class LeadService:
         lead = await uow.leads.get_by_id(lead_id)
 
         if not lead:
+            logger.info(f"Lead with id {lead_id} not found")
             raise LeadNotFound()
 
         if lead.status in (
             LeadStatus.CONVERTED,
             LeadStatus.LOST,
         ):
+            logger.info(f"Lead status with id: {lead_id} and status: {lead.status} cannot be changed")
             raise InvalidStatusTransition()
 
         old_status = lead.status

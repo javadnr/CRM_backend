@@ -1,3 +1,4 @@
+
 import uuid
 from sqlalchemy import Column, String, TIMESTAMP, func, Index
 from sqlalchemy.dialects.postgresql import UUID, ENUM
@@ -16,6 +17,7 @@ class LeadModel(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     phone = Column(String, nullable=False)
+    email = Column(String, nullable=False, default='')
     source = Column(String, nullable=False)
     status = Column(lead_status_enum, nullable=False, default=LeadStatus.NEW.value)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
